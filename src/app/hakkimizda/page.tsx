@@ -2,6 +2,9 @@ import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/image";
 import Image from "next/image";
 
+// ISR: Sayfa her 60 saniyede bir arka planda yeniden oluşturulur.
+export const revalidate = 60;
+
 // Ekip Verilerini Çeken Fonksiyon
 async function getTeam() {
   const query = `*[_type == "team"] | order(orderRank) {

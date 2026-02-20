@@ -2,6 +2,19 @@ import { client } from "@/sanity/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+// ISR: Her slug sayfası 60 saniyede bir yeniden oluşturulur.
+export const revalidate = 60;
+
+// Bilinmeyen slug'lara 404 yerine dinamik render izni ver
+export const dynamicParams = true;
+
+// Build sırasında mevcut tüm yayın slug'larını önceden oluştur
+export async function generateStaticParams() {
+  const query = `*[_type == "publication" && defined(slug.current)]{ "slug": slug.current }`;
+  const yayinlar = await client.fetch(query);
+  return yayinlar.map((y: { slug: string }) => ({ slug: y.slug }));
+}
+
 // Tek bir yayını çeken fonksiyon
 async function getPublication(slug: string) {
   const query = `*[_type == "publication" && slug.current == $slug][0]{
@@ -14,8 +27,7 @@ async function getPublication(slug: string) {
     "fileUrl": file.asset->url
   }`;
   
-  // Burada slug'ın dolu olduğundan emin oluyoruz
-  const data = await client.fetch(query, { slug }, { next: { revalidate: 0 } });
+  const data = await client.fetch(query, { slug });
   return data;
 }
 

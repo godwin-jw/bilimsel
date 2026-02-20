@@ -2,6 +2,9 @@ import { client } from "@/sanity/client";
 import Link from "next/link";
 import { ArrowRight, Beaker, BookOpen, Users } from "lucide-react";
 
+// ISR: Sayfa her 60 saniyede bir arka planda yeniden oluşturulur.
+export const revalidate = 60;
+
 // İstatistikleri veritabanından çeken fonksiyon
 async function getHomeData() {
   const query = `{
@@ -10,8 +13,8 @@ async function getHomeData() {
     "ekipSayisi": count(*[_type == "team"])
   }`;
 
-  // Veriyi anlık çekmek için önbelleği kapatıyoruz (revalidate: 0)
-  const data = await client.fetch(query, {}, { next: { revalidate: 0 } });
+  // Segment-level revalidate (60s) kullanıldığı için burada ayrıca belirtmeye gerek yok
+  const data = await client.fetch(query);
   return data;
 }
 

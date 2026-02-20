@@ -4,6 +4,19 @@ import Image from "next/image";
 import { PortableText } from "next-sanity";
 import Link from "next/link"; // Link bileşenini ekledik
 
+// ISR: Her slug sayfası 60 saniyede bir yeniden oluşturulur.
+export const revalidate = 60;
+
+// Bilinmeyen slug'lara 404 yerine dinamik render izni ver
+export const dynamicParams = true;
+
+// Build sırasında mevcut tüm proje slug'larını önceden oluştur
+export async function generateStaticParams() {
+  const query = `*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`;
+  const projeler = await client.fetch(query);
+  return projeler.map((p: { slug: string }) => ({ slug: p.slug }));
+}
+
 // Tek bir projeyi çeken fonksiyon
 async function getProject(slug: string) {
   // DİKKAT: Query'yi daha güvenli hale getirdik ($slug parametresi ile)

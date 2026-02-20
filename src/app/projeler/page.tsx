@@ -5,6 +5,10 @@ import Image from "next/image";
 import { ArrowUpRight, Briefcase } from "lucide-react";
 import { BorderBeam } from "@/components/ui/border-beam";
 
+// ISR: Sayfa her 60 saniyede bir arka planda yeniden oluşturulur.
+// Sanity'de değişiklik yapınca en fazla 60 saniye içinde yansır.
+export const revalidate = 60;
+
 // Veriyi çeken fonksiyon (GROQ Sorgusu)
 async function getProjects() {
   const query = `*[_type == "post"] | order(_createdAt desc) {

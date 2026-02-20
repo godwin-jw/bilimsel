@@ -1,6 +1,9 @@
 import { client } from "@/sanity/client";
 import Link from "next/link";
 
+// ISR: Sayfa her 60 saniyede bir arka planda yeniden oluşturulur.
+export const revalidate = 60;
+
 // 1. GÜNCELLEME: Sorguya "slug" bilgisini ekledik
 async function getPublications() {
   const query = `*[_type == "publication"] | order(publishedAt desc) {
@@ -13,7 +16,7 @@ async function getPublications() {
     "slug": slug.current, 
     "fileUrl": file.asset->url
   }`;
-  const data = await client.fetch(query, {}, { next: { revalidate: 0 } });
+  const data = await client.fetch(query);
   return data;
 }
 
